@@ -1,0 +1,535 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>hctf2015 writeup | Sevenline&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="sevenline">
+    
+
+    
+    <meta name="description" content="前言周六的时候抽空做了四道题，傍晚去班级聚餐之后就没弄了。这次的ctf挺有意思的，开题还要拿金币去买，哈哈。
+writeup0x00 404抓包flag藏在一个302的响应包里
+flag:hctf{w3lcome_t0_hc7f_f4f4f4}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hctf2015 writeup">
+<meta property="og:url" content="http://yoursite.com/2015/12/08/hctf2015-writeup/index.html">
+<meta property="og:site_name" content="Sevenline's blog">
+<meta property="og:description" content="前言周六的时候抽空做了四道题，傍晚去班级聚餐之后就没弄了。这次的ctf挺有意思的，开题还要拿金币去买，哈哈。
+writeup0x00 404抓包flag藏在一个302的响应包里
+flag:hctf{w3lcome_t0_hc7f_f4f4f4}">
+<meta property="og:image" content="http://yoursite.com/img/151208-1.png">
+<meta property="og:image" content="http://yoursite.com/img/151208-2.jpeg">
+<meta property="og:image" content="http://yoursite.com/img/151208-3.png">
+<meta property="og:image" content="http://yoursite.com/img/151208-4.png">
+<meta property="og:image" content="http://yoursite.com/img/151208-5.png">
+<meta property="og:updated_time" content="2015-12-08T13:43:41.846Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hctf2015 writeup">
+<meta name="twitter:description" content="前言周六的时候抽空做了四道题，傍晚去班级聚餐之后就没弄了。这次的ctf挺有意思的，开题还要拿金币去买，哈哈。
+writeup0x00 404抓包flag藏在一个302的响应包里
+flag:hctf{w3lcome_t0_hc7f_f4f4f4}">
+<meta name="twitter:image" content="http://yoursite.com/img/151208-1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sevenline&#39;s blog">Sevenline&#39;s blog</a></h1>
+				<h2 class="blog-motto">Hello, Stranger.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/08/hctf2015-writeup/" title="hctf2015 writeup" itemprop="url">hctf2015 writeup</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-08T11:50:18.000Z" itemprop="datePublished"> 发表于 2015-12-08</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#writeup"><span class="toc-number">2.</span> <span class="toc-text">writeup</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-404"><span class="toc-number">2.1.</span> <span class="toc-text">0x00 404</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-送分要不要"><span class="toc-number">2.2.</span> <span class="toc-text">0x01 送分要不要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-Andy"><span class="toc-number">2.3.</span> <span class="toc-text">0x02 Andy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-fuck"><span class="toc-number">2.4.</span> <span class="toc-text">0x03 fuck===</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>周六的时候抽空做了四道题，傍晚去班级聚餐之后就没弄了。这次的ctf挺有意思的，开题还要拿金币去买，哈哈。</p>
+<h1 id="writeup"><a href="#writeup" class="headerlink" title="writeup"></a>writeup</h1><h2 id="0x00-404"><a href="#0x00-404" class="headerlink" title="0x00 404"></a>0x00 404</h2><p>抓包<br>flag藏在一个302的响应包里<br><img src="/img/151208-1.png" alt=""></p>
+<p><strong>flag:hctf{w3lcome_t0_hc7f_f4f4f4}</strong><br><a id="more"></a></p>
+<h2 id="0x01-送分要不要"><a href="#0x01-送分要不要" class="headerlink" title="0x01 送分要不要"></a>0x01 送分要不要</h2><p>在文件加上后缀zip，可以解压，里面有张jpg，但是没什么用。<br>用binwalk提取文件，关注A362.7z，用16进制编辑器打开查看，有一串字符串<br><img src="/img/151208-2.jpeg" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">R1k0RE1NWlhHUTNETU4yQ0daQ1RNUkpUR0UzVEdOUlRHVkRETVFaWEdNMlVNTlpUR01ZREtSUlRHTVpUSU5aVEc0NFRFTUpYSVE9PT09PT0</div></pre></td></tr></table></figure>
+<p>base64解码：<br>GY4DMMZXGQ3DMN2CGZCTMRJTGE3TGNRTGVDDMQZXGM2UMNZTGMYDKRRTGMZTINZTG44TEMJXIQ======</p>
+<p>接着再base32解码，base16解码，flag就出来了。python就可以base64/32/16解码<br><img src="/img/151208-3.png" alt=""></p>
+<p>base32:<br>686374667B6E6E3173635F6C735F73305F33347379217D</p>
+<p>base16:<br>hctf{nn1sc_ls_s0_34sy!}</p>
+<p><strong>flag:hctf{nn1sc_ls_s0_34sy!}</strong></p>
+<h2 id="0x02-Andy"><a href="#0x02-Andy" class="headerlink" title="0x02 Andy"></a>0x02 Andy</h2><p>这题按思路下来虽然不影响解题，但是好坑…<br>apk反编译之后可以看到关键代码,MainActivity.java<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(MainActivity.<span class="keyword">this</span>.make.andy().equals(<span class="string">"SRlhb70YZHKvlTrNrt08F=DX3cdD3txmg"</span>)) &#123;</div><div class="line">    Toast.makeText(MainActivity.<span class="keyword">this</span>, <span class="string">"You get the flag!"</span>, <span class="number">1</span>).show();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>于是去看Make.java，关键代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">andy</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.reverse = <span class="keyword">new</span> Reverse(<span class="keyword">this</span>.input + <span class="string">"hdu1s8"</span>);</div><div class="line">    <span class="keyword">this</span>.encrypt = <span class="keyword">new</span> Encrypt(<span class="keyword">this</span>.reverse.make());</div><div class="line">    <span class="keyword">this</span>.classical = <span class="keyword">new</span> Classical(<span class="keyword">this</span>.encrypt.make());</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.classical.make();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>到这里就可以知道，进攻Reverse，Encrypt，Classical之后出来的密文串是”SRlhb70YZHKvlTrNrt08F=DX3cdD3txmg”，那么我们需要从Classical，Encrypt，Reverse逆回去。Encrypt是base64加密，所以逆回去是base64解密；Reverse是把字符串逆序；这两个过程都是比较简单的，关键是Classical<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Classical</span><span class="params">(String input)</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>();</div><div class="line">    <span class="keyword">this</span>.array1 = <span class="string">"0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z = A B C D E F G H I J K L M E O P Q R S T U V W X Y Z"</span>;</div><div class="line">    <span class="keyword">this</span>.array2 = <span class="string">"W,p,X,4,5,B,q,A,6,a,V,3,r,b,U,s,E,d,C,c,D,O,t,T,Y,v,9,Q,2,e,8,P,f,h,J,N,g,u,K,k,H,x,L,w,R,I,j,i,y,l,m,S,M,1,0,O,n,2,G,7,=,F,Z"</span>;</div><div class="line">    <span class="keyword">this</span>.input = input;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">make</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">new</span> String[<span class="number">0</span>];</div><div class="line">    <span class="keyword">new</span> String[<span class="number">0</span>];</div><div class="line">    String[] v1 = <span class="keyword">this</span>.array1.split(<span class="string">" "</span>);</div><div class="line">    String[] v2 = <span class="keyword">this</span>.array2.split(<span class="string">","</span>);</div><div class="line">    <span class="keyword">int</span> v4 = <span class="keyword">this</span>.input.length();</div><div class="line">    <span class="keyword">int</span> v3;</div><div class="line">    <span class="keyword">for</span>(v3 = <span class="number">0</span>; v3 &lt; v4; ++v3) &#123;</div><div class="line">        String v0 = String.valueOf(<span class="keyword">this</span>.input.charAt(v3));</div><div class="line">        <span class="keyword">int</span> v5;</div><div class="line">        <span class="keyword">for</span>(v5 = <span class="number">0</span>; v5 &lt; <span class="number">63</span>; ++v5) &#123;</div><div class="line">            <span class="keyword">if</span>(v0.equals(v1[v5])) &#123;</div><div class="line">                <span class="keyword">this</span>.output = v3 == <span class="number">0</span> ? v2[v5] : <span class="keyword">this</span>.output + v2[v5];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.output;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>仔细看可以知道其实逻辑也是比较简单的，相当于把array1和array2按顺序一一映射（array1-&gt;array2），那么逆回来的话就是（array2-&gt;array1），但是array1不是普通的字符表，仔细看，发现’E’是有两个映射的，分别对应’x’和’m’，没有’N’字符，所以如果逆过来运算的话级要注意</p>
+<p>SRlhb70YZHKvlTrNrt08F=DX3cdD3txmg</p>
+<p>Classical:<br>错误：OHMxdWRoZDBpMnczcmRuYXk2bjhkbmEE=<br>正确：OHMxdWRoZDBpMnczcmRuYXk2bjhkbmE=（因为’E’对应’x’和’m’，所以实际只有一个’E’）</p>
+<p>base64:<br>8s1udhd0i2w3rdnay6n8dna</p>
+<p>reverse:<br>and8n6yandr3w2i0dhdu1s8</p>
+<p>sub:<br>and8n6yandr3w2i0d</p>
+<p><img src="/img/151208-4.png" alt=""></p>
+<p><strong>flag: hctf{and8n6yandr3w2i0d}</strong></p>
+<h2 id="0x03-fuck"><a href="#0x03-fuck" class="headerlink" title="0x03 fuck==="></a>0x03 fuck===</h2><p><img src="/img/151208-5.png" alt=""></p>
+<p>sha1漏洞，类似strcmp，如果是传入数组，他们俩判断正确，但是sha1无法处理数组，所以返回false</p>
+<p><strong>flag:hctf{dd0g_fjdks4r3wrkq7jl}</strong></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/CTF/">CTF</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/writeup/">writeup</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/12/08/hctf2015-writeup/" data-title="hctf2015 writeup | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/21/smali注入小技巧/" title="smali注入小技巧">
+  <strong>上一篇：</strong><br/>
+  <span>
+  smali注入小技巧</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/11/30/广东省强网杯网络安全资格赛writeup/"  title="广东省强网杯网络安全资格赛writeup">
+ <strong>下一篇：</strong><br/> 
+ <span>广东省强网杯网络安全资格赛writeup
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#writeup"><span class="toc-number">2.</span> <span class="toc-text">writeup</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-404"><span class="toc-number">2.1.</span> <span class="toc-text">0x00 404</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-送分要不要"><span class="toc-number">2.2.</span> <span class="toc-text">0x01 送分要不要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-Andy"><span class="toc-number">2.3.</span> <span class="toc-text">0x02 Andy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-fuck"><span class="toc-number">2.4.</span> <span class="toc-text">0x03 fuck===</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Python/" title="Python">Python<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/writeup/" title="writeup">writeup<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apk/" title="apk">apk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> This is my blog. <br/>
+			Welcome :)</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/7777777line" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:seven@whitecell-club.org" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="sevenline">sevenline</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

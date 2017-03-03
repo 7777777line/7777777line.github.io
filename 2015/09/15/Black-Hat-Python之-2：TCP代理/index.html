@@ -1,0 +1,503 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Black Hat Python之#2：TCP代理 | Sevenline&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="sevenline">
+    
+
+    
+    <meta name="description" content="在本科做毕设的时候就接触到TCP代理这东西，当时需要使用代理来对发送和收到的数据做修改，同时使用代理也让我对HTTP协议有了更深的了解。下面讲一下用python做一个tcp代理的基本原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Black Hat Python之#2：TCP代理">
+<meta property="og:url" content="http://yoursite.com/2015/09/15/Black-Hat-Python之-2：TCP代理/index.html">
+<meta property="og:site_name" content="Sevenline's blog">
+<meta property="og:description" content="在本科做毕设的时候就接触到TCP代理这东西，当时需要使用代理来对发送和收到的数据做修改，同时使用代理也让我对HTTP协议有了更深的了解。下面讲一下用python做一个tcp代理的基本原理">
+<meta property="og:updated_time" content="2015-11-24T12:11:06.842Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Black Hat Python之#2：TCP代理">
+<meta name="twitter:description" content="在本科做毕设的时候就接触到TCP代理这东西，当时需要使用代理来对发送和收到的数据做修改，同时使用代理也让我对HTTP协议有了更深的了解。下面讲一下用python做一个tcp代理的基本原理">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sevenline&#39;s blog">Sevenline&#39;s blog</a></h1>
+				<h2 class="blog-motto">Hello, Stranger.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/09/15/Black-Hat-Python之-2：TCP代理/" title="Black Hat Python之#2：TCP代理" itemprop="url">Black Hat Python之#2：TCP代理</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-09-15T12:45:25.000Z" itemprop="datePublished"> 发表于 2015-09-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>在本科做毕设的时候就接触到TCP代理这东西，当时需要使用代理来对发送和收到的数据做修改，同时使用代理也让我对HTTP协议有了更深的了解。<br>下面讲一下用python做一个tcp代理的基本原理<a id="more"></a></p>
+<p>TCP Proxy用到的一个主要的东西就是socket。proxy通过socket分别对localhost和remotehost做连接，然后可以对通过proxy的流量和数据进行分析。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div></pre></td><td class="code"><pre><div class="line">__author__ = <span class="string">'seven'</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> socket</div><div class="line"><span class="keyword">import</span> threading</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hexdump</span><span class="params">(src, length=<span class="number">16</span>)</span>:</span></div><div class="line">    result = []</div><div class="line">    digits = <span class="number">4</span> <span class="keyword">if</span> isinstance(src, unicode) <span class="keyword">else</span> <span class="number">2</span></div><div class="line"></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">0</span>, len(src), length):</div><div class="line">        s = src[i:i + length]</div><div class="line">        hexa = <span class="string">b' '</span>.join([<span class="string">"%0*X"</span> % (digits, ord(x)) <span class="keyword">for</span> x <span class="keyword">in</span> s])</div><div class="line">        text = <span class="string">b''</span>.join([x <span class="keyword">if</span> <span class="number">0x20</span> &lt;= ord(x) &lt; <span class="number">0x7F</span> <span class="keyword">else</span> <span class="string">b'.'</span> <span class="keyword">for</span> x <span class="keyword">in</span> s])</div><div class="line">        result.append(<span class="string">b"%04X  %-*s  %s"</span> % (i, length * (digits + <span class="number">1</span>), hexa, text))</div><div class="line"></div><div class="line">    <span class="keyword">print</span> <span class="string">b'\n'</span>.join(result)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">receive_from</span><span class="params">(connection)</span>:</span></div><div class="line">    buffer = <span class="string">""</span></div><div class="line"></div><div class="line">    <span class="comment"># We set a 2 second time out depending on your target this may need to be adjusted</span></div><div class="line">    connection.settimeout(<span class="number">2</span>)</div><div class="line"></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">            data = connection.recv(<span class="number">4096</span>)</div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> data:</div><div class="line">                <span class="keyword">break</span></div><div class="line">            buffer += data</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        <span class="keyword">pass</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> buffer</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_handler</span><span class="params">(buffer)</span>:</span></div><div class="line">    <span class="comment"># perform packet mofifications</span></div><div class="line">    <span class="keyword">return</span> buffer</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">response_handler</span><span class="params">(buffer)</span>:</span></div><div class="line">    <span class="comment"># perform pakect modifications</span></div><div class="line">    <span class="keyword">return</span> buffer</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">proxy_handler</span><span class="params">(client_socket, remote_host, remote_port, receive_first)</span>:</span></div><div class="line">    remote_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</div><div class="line">    remote_socket.connect((remote_host, remote_port))</div><div class="line"></div><div class="line">    <span class="keyword">if</span> receive_first:</div><div class="line">        remote_buffer = receive_from(remote_socket)</div><div class="line">        hexdump(remote_buffer)</div><div class="line">        remote_buffer = response_handler(remote_buffer)</div><div class="line">        <span class="keyword">if</span> len(remote_buffer):</div><div class="line">            <span class="keyword">print</span> <span class="string">"[&lt;==] Sending %d bytes to localhost."</span> % len(remote_buffer)</div><div class="line">            client_socket.send(remote_buffer)</div><div class="line"></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        local_buffer = receive_from(client_socket)</div><div class="line">        <span class="keyword">if</span> len(local_buffer):</div><div class="line">            <span class="keyword">print</span> <span class="string">"[==&gt;] Received %d bytes from localhost."</span> % len(local_buffer)</div><div class="line">            hexdump(local_buffer)</div><div class="line">            local_buffer = request_handler(local_buffer)</div><div class="line">            remote_socket.send(local_buffer)</div><div class="line">            <span class="keyword">print</span> <span class="string">"[==&gt;] Sent to remote."</span></div><div class="line">        remote_buffer = receive_from(remote_socket)</div><div class="line">        <span class="keyword">if</span> len(remote_buffer):</div><div class="line">            <span class="keyword">print</span> <span class="string">"[&lt;==] Received %d bytes from remote."</span> % len(remote_buffer)</div><div class="line">            hexdump(remote_buffer)</div><div class="line">            remote_buffer = response_handler(remote_buffer)</div><div class="line">            client_socket.send(remote_buffer)</div><div class="line">            <span class="keyword">print</span> <span class="string">"[&lt;==] Sent to localhost."</span></div><div class="line">        <span class="keyword">if</span> <span class="keyword">not</span> len(local_buffer) <span class="keyword">or</span> <span class="keyword">not</span> len(remote_buffer):</div><div class="line">            client_socket.close()</div><div class="line">            remote_socket.close()</div><div class="line">            <span class="keyword">print</span> <span class="string">"[*] No more data. Closing connections."</span></div><div class="line"></div><div class="line">            <span class="keyword">break</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">server_loop</span><span class="params">(local_host, local_port, remote_host, remote_port, receive_first)</span>:</span></div><div class="line">    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        server.bind((local_host, local_port))</div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        <span class="keyword">print</span> <span class="string">"[!!] Failed to listen on %s:%d"</span> % (local_host, local_port)</div><div class="line">        <span class="keyword">print</span> <span class="string">"[!!] Check for other listening sockets or correct permissions."</span></div><div class="line">        sys.exit(<span class="number">0</span>)</div><div class="line">    <span class="keyword">print</span> <span class="string">"[*] Listening on %s:%d"</span> % (local_host, local_port)</div><div class="line"></div><div class="line">    server.listen(<span class="number">5</span>)</div><div class="line"></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        client_socket, addr = server.accept()</div><div class="line">        <span class="keyword">print</span> <span class="string">"[==&gt;] Received incoming connection from %s:%d"</span> % (addr[<span class="number">0</span>], addr[<span class="number">1</span>])</div><div class="line">        proxy_thread = threading.Thread(target=proxy_handler,</div><div class="line">                                        args=(client_socket, remote_host, remote_port, receive_first))</div><div class="line">        proxy_thread.start()</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">if</span> len(sys.argv[<span class="number">1</span>:]) != <span class="number">5</span>:</div><div class="line">        <span class="keyword">print</span> <span class="string">"Usage: ./tcp proxy.py [localhost] [localport] [remotehost] [remoteport] [receive_first]"</span></div><div class="line">        <span class="keyword">print</span> <span class="string">"Example: ./tcp proxy.py 127.0.0.1 9000 10.12.132.1 9000 True"</span></div><div class="line">        sys.exit(<span class="number">0</span>)</div><div class="line"></div><div class="line">    local_host = sys.argv[<span class="number">1</span>]</div><div class="line">    local_port = int(sys.argv[<span class="number">2</span>])</div><div class="line"></div><div class="line">    remote_host = sys.argv[<span class="number">3</span>]</div><div class="line">    remote_port = int(sys.argv[<span class="number">4</span>])</div><div class="line"></div><div class="line">    receive_first = sys.argv[<span class="number">5</span>]</div><div class="line"></div><div class="line">    <span class="keyword">if</span> <span class="string">"True"</span> <span class="keyword">in</span> receive_first:</div><div class="line">        receive_first = <span class="keyword">True</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        receive_first = <span class="keyword">False</span></div><div class="line"></div><div class="line">    server_loop(local_host, local_port, remote_host, remote_port, receive_first)</div><div class="line"></div><div class="line"></div><div class="line">main()</div></pre></td></tr></table></figure></p>
+<p>在request_handler和response_handler函数中就可以对收到的数据进行修改。</p>
+<p>高大上的hexdump函数来自<a href="http://code.activestate.com/recipes/142812-hex-dumper/，表示不怎么看得懂..如果有看得懂的朋友欢迎和我交流" target="_blank" rel="external">http://code.activestate.com/recipes/142812-hex-dumper/，表示不怎么看得懂..如果有看得懂的朋友欢迎和我交流</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Python/">Python</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/BHP/">BHP</a><a href="/tags/tcp-proxy/">tcp proxy</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/09/15/Black-Hat-Python之-2：TCP代理/" data-title="Black Hat Python之#2：TCP代理 | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/09/20/Android-app-AllowBackup漏洞手工检测/" title="Android app AllowBackup漏洞手工检测">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Android app AllowBackup漏洞手工检测</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/09/12/Black-Hat-Python之-1：制作简单的nc工具/"  title="Black Hat Python之#1：制作简单的nc工具">
+ <strong>下一篇：</strong><br/> 
+ <span>Black Hat Python之#1：制作简单的nc工具
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Python/" title="Python">Python<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/writeup/" title="writeup">writeup<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apk/" title="apk">apk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> This is my blog. <br/>
+			Welcome :)</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/7777777line" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:seven@whitecell-club.org" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="sevenline">sevenline</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

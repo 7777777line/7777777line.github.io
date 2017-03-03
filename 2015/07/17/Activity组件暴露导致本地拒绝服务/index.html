@@ -1,0 +1,536 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Activity组件暴露导致本地拒绝服务 | Sevenline&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="sevenline">
+    
+
+    
+    <meta name="description" content="这几天团队打算一起学习Android App漏洞挖掘方面的知识，于是乎拿了一个app当测试例子，争取在上面找到漏洞。在学习过程中发现Android四大组件的安全性还是占有较大的比重，另外比较关心的是数据的安全性。数据泄漏、明文存储等和数据相关都是比较重要的。但是今天找到的一个漏洞是关于Activity组件的，本地拒绝服务漏洞。
+同时学习了drozer的使用方法，利用drozer帮忙找漏洞。
+下面总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity组件暴露导致本地拒绝服务">
+<meta property="og:url" content="http://yoursite.com/2015/07/17/Activity组件暴露导致本地拒绝服务/index.html">
+<meta property="og:site_name" content="Sevenline's blog">
+<meta property="og:description" content="这几天团队打算一起学习Android App漏洞挖掘方面的知识，于是乎拿了一个app当测试例子，争取在上面找到漏洞。在学习过程中发现Android四大组件的安全性还是占有较大的比重，另外比较关心的是数据的安全性。数据泄漏、明文存储等和数据相关都是比较重要的。但是今天找到的一个漏洞是关于Activity组件的，本地拒绝服务漏洞。
+同时学习了drozer的使用方法，利用drozer帮忙找漏洞。
+下面总">
+<meta property="og:updated_time" content="2015-11-24T12:11:33.590Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Activity组件暴露导致本地拒绝服务">
+<meta name="twitter:description" content="这几天团队打算一起学习Android App漏洞挖掘方面的知识，于是乎拿了一个app当测试例子，争取在上面找到漏洞。在学习过程中发现Android四大组件的安全性还是占有较大的比重，另外比较关心的是数据的安全性。数据泄漏、明文存储等和数据相关都是比较重要的。但是今天找到的一个漏洞是关于Activity组件的，本地拒绝服务漏洞。
+同时学习了drozer的使用方法，利用drozer帮忙找漏洞。
+下面总">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sevenline&#39;s blog">Sevenline&#39;s blog</a></h1>
+				<h2 class="blog-motto">Hello, Stranger.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/07/17/Activity组件暴露导致本地拒绝服务/" title="Activity组件暴露导致本地拒绝服务" itemprop="url">Activity组件暴露导致本地拒绝服务</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-07-17T12:31:21.000Z" itemprop="datePublished"> 发表于 2015-07-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>这几天团队打算一起学习Android App漏洞挖掘方面的知识，于是乎拿了一个app当测试例子，争取在上面找到漏洞。在学习过程中发现Android四大组件的安全性还是占有较大的比重，另外比较关心的是数据的安全性。数据泄漏、明文存储等和数据相关都是比较重要的。但是今天找到的一个漏洞是关于Activity组件的，本地拒绝服务漏洞。</p>
+<p>同时学习了drozer的使用方法，利用drozer帮忙找漏洞。</p>
+<p>下面总结一些常用的drozer命令：</p>
+<pre><code># xxx是包名的一部分，运行这条命令之后会显示完整的包名
+run app.package.info -f xxx
+# 运行这条命令会打印出包相关的信息，包括版本、路径、权限、uid、gid等
+run app.package.info -a &lt;包名&gt;
+# 运行这条命令之后会打印出这个应用四大组件的攻击面，Activity, Service, Content,Provider, Broadcast是否有暴露的风险
+run app.package.attacksurface &lt;包名&gt;　　
+# 运行这条命令会打印出exported的activity，并且显示是否需要相应的权限
+run app.activity.info -a &lt;包名&gt;
+# 如果activity是exported并且不需要权限，那么运行这条命令就可以启动相应的activity了
+run app.activity.start --component &lt;包名&gt; &lt;activity&gt;
+</code></pre><p>（目前只测试了activity组件，所以关于其他组件的命令暂时还没有使用）</p>
+ <a id="more"></a>
+<p>首先说明一下这个本地拒绝服务漏洞的大概<strong>原理</strong>：</p>
+<p>通过drozer可以找到exported的activity，而许多activity的调用是不需要权限的，即permission=null。意味着，其他应用无须权限就可以调用这些activity。同时，如果activity的调用是需要参数的，那么在调用时不带上参数就会因为输入异常导致应用崩溃了，这样就造成了本地拒绝服务。</p>
+<p><strong>漏洞修补</strong>的方法也很简单，可以从以下三个方面下手：</p>
+<ol>
+<li><p>不需要被外部调用的activity设置android:exported=”false”；</p>
+</li>
+<li><p>若需要外部调用，需自定义signature或者signatureOrSystem级别的权限；</p>
+</li>
+<li><p>注册的组件请严格校验输入参数，注意空值判定和类型转换判断</p>
+</li>
+</ol>
+<p>简单的<strong>Poc</strong>：</p>
+<p>Intent intent = new Intent();</p>
+<p>intent.setComponent(new ComponentName(&lt;包名&gt;, <activity>));</activity></p>
+<p>intent.putExtra(“”, “”);</p>
+<p>startActivity(intent);</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/refuse-service/">refuse service</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/07/17/Activity组件暴露导致本地拒绝服务/" data-title="Activity组件暴露导致本地拒绝服务 | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/09/10/使用python的socket模块进行网络编程/" title="使用python的socket模块进行网络编程">
+  <strong>上一篇：</strong><br/>
+  <span>
+  使用python的socket模块进行网络编程</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/06/06/python类型转换/"  title="python类型转换">
+ <strong>下一篇：</strong><br/> 
+ <span>python类型转换
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Python/" title="Python">Python<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/writeup/" title="writeup">writeup<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apk/" title="apk">apk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> This is my blog. <br/>
+			Welcome :)</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/7777777line" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:seven@whitecell-club.org" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="sevenline">sevenline</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,569 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>广东省强网杯网络安全资格赛writeup | Sevenline&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="sevenline">
+    
+
+    
+    <meta name="description" content="前言昨天比赛结束，趁热打铁，写一下writeup，第一次两天都专心比赛，团队的力量很强大，哈哈。
+这个省的强网杯是第一届，感觉出的crypto，misc题还挺多的，而pwn和re的题居然没有队解出来。
+writeup0x00 来看一下flag格式这题告诉我们flag的格式，直接粘贴复制就好了
+0x01 致敬经典题目：lrua{1uy3yj9l-yw9u-48j2-uuj8-36h03706y7u7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="广东省强网杯网络安全资格赛writeup">
+<meta property="og:url" content="http://yoursite.com/2015/11/30/广东省强网杯网络安全资格赛writeup/index.html">
+<meta property="og:site_name" content="Sevenline's blog">
+<meta property="og:description" content="前言昨天比赛结束，趁热打铁，写一下writeup，第一次两天都专心比赛，团队的力量很强大，哈哈。
+这个省的强网杯是第一届，感觉出的crypto，misc题还挺多的，而pwn和re的题居然没有队解出来。
+writeup0x00 来看一下flag格式这题告诉我们flag的格式，直接粘贴复制就好了
+0x01 致敬经典题目：lrua{1uy3yj9l-yw9u-48j2-uuj8-36h03706y7u7">
+<meta property="og:image" content="http://yoursite.com/img/猪圈密码.jpg">
+<meta property="og:updated_time" content="2015-12-08T11:44:15.892Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="广东省强网杯网络安全资格赛writeup">
+<meta name="twitter:description" content="前言昨天比赛结束，趁热打铁，写一下writeup，第一次两天都专心比赛，团队的力量很强大，哈哈。
+这个省的强网杯是第一届，感觉出的crypto，misc题还挺多的，而pwn和re的题居然没有队解出来。
+writeup0x00 来看一下flag格式这题告诉我们flag的格式，直接粘贴复制就好了
+0x01 致敬经典题目：lrua{1uy3yj9l-yw9u-48j2-uuj8-36h03706y7u7">
+<meta name="twitter:image" content="http://yoursite.com/img/猪圈密码.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sevenline&#39;s blog">Sevenline&#39;s blog</a></h1>
+				<h2 class="blog-motto">Hello, Stranger.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/11/30/广东省强网杯网络安全资格赛writeup/" title="广东省强网杯网络安全资格赛writeup" itemprop="url">广东省强网杯网络安全资格赛writeup</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-30T14:04:12.000Z" itemprop="datePublished"> 发表于 2015-11-30</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#writeup"><span class="toc-number">2.</span> <span class="toc-text">writeup</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-来看一下flag格式"><span class="toc-number">2.1.</span> <span class="toc-text">0x00 来看一下flag格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-致敬经典"><span class="toc-number">2.2.</span> <span class="toc-text">0x01 致敬经典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-回旋13踢"><span class="toc-number">2.3.</span> <span class="toc-text">0x02 回旋13踢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-正确的密码"><span class="toc-number">2.4.</span> <span class="toc-text">0x03 正确的密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-常用的管理员密码"><span class="toc-number">2.5.</span> <span class="toc-text">0x04 常用的管理员密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-万国码"><span class="toc-number">2.6.</span> <span class="toc-text">0x05 万国码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x06-小心猪圈"><span class="toc-number">2.7.</span> <span class="toc-text">0x06 小心猪圈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x07-奇怪的数据库"><span class="toc-number">2.8.</span> <span class="toc-text">0x07 奇怪的数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x08-眼前"><span class="toc-number">2.9.</span> <span class="toc-text">0x08 眼前</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x09-找彩蛋"><span class="toc-number">2.10.</span> <span class="toc-text">0x09 找彩蛋</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0A-又一个后台"><span class="toc-number">2.11.</span> <span class="toc-text">0x0A 又一个后台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0B-大黑阔"><span class="toc-number">2.12.</span> <span class="toc-text">0x0B 大黑阔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0C-单身狗"><span class="toc-number">2.13.</span> <span class="toc-text">0x0C 单身狗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0D-女神在哪儿"><span class="toc-number">2.14.</span> <span class="toc-text">0x0D 女神在哪儿</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0E-小苹果"><span class="toc-number">2.15.</span> <span class="toc-text">0x0E 小苹果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0F-爆破"><span class="toc-number">2.16.</span> <span class="toc-text">0x0F 爆破</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>昨天比赛结束，趁热打铁，写一下writeup，第一次两天都专心比赛，团队的力量很强大，哈哈。</p>
+<p>这个省的强网杯是第一届，感觉出的crypto，misc题还挺多的，而pwn和re的题居然没有队解出来。</p>
+<h1 id="writeup"><a href="#writeup" class="headerlink" title="writeup"></a>writeup</h1><h2 id="0x00-来看一下flag格式"><a href="#0x00-来看一下flag格式" class="headerlink" title="0x00 来看一下flag格式"></a>0x00 来看一下flag格式</h2><p>这题告诉我们flag的格式，直接粘贴复制就好了</p>
+<h2 id="0x01-致敬经典"><a href="#0x01-致敬经典" class="headerlink" title="0x01 致敬经典"></a>0x01 致敬经典</h2><p>题目：<br>lrua{1uy3yj9l-yw9u-48j2-uuj8-36h03706y7u7}</p>
+<p>题目的图片扔去百度识图发现是凯撒大帝，so..可能跟凯撒密码有关，做下去发现算是凯撒密码的变种。映射关系是，按字母表顺序，奇数位的字母循环右移6位，偶数位的字母循环左移6位，所以l-&gt;f，r-&gt;l，u-&gt;a，a-&gt;g，符合，所以最后得到flag。</p>
+<p><strong>flag{1ae3ed9f-ec9a-48d2-aad8-36b03706e7a7}</strong><br><a id="more"></a></p>
+<h2 id="0x02-回旋13踢"><a href="#0x02-回旋13踢" class="headerlink" title="0x02 回旋13踢"></a>0x02 回旋13踢</h2><p>题目：<br>看我回旋13踢synt{5pq1004q-86n5-46q8-o720-oro5on0417r1}</p>
+<p>一看回旋13踢，很自然想到rot13，扔去<a href="http://www.xarg.org/tools/caesar-cipher/" target="_blank" rel="external">http://www.xarg.org/tools/caesar-cipher/</a> 就解出来了。</p>
+<p><strong>flag{5cd1004d-86a5-46d8-b720-beb5ba0417e1}</strong></p>
+<h2 id="0x03-正确的密码"><a href="#0x03-正确的密码" class="headerlink" title="0x03 正确的密码"></a>0x03 正确的密码</h2><p>题目：<br>小明了是一个网站管理员，网站数据库被黑客篡改了，现在的密码变成了4e8f794089bl6b4ef55cd0399dca1433c，请帮小明找回原密码</p>
+<p>33位，多了一位。之前见过类似的题，以前傻傻的把所有的字符都遍历踢掉一遍，然后得到答案，但其实认真看这个字符串就会发现有不应该出现的字符——l（字母只会出现a-f），所以把l去掉之后，md5解密得到flag</p>
+<p><strong>flag{huang}</strong></p>
+<h2 id="0x04-常用的管理员密码"><a href="#0x04-常用的管理员密码" class="headerlink" title="0x04 常用的管理员密码"></a>0x04 常用的管理员密码</h2><p>题目：<br>不知道你知道常用的管理员密码是什么么？</p>
+<p>明显admin</p>
+<p><strong>flag{admin}</strong></p>
+<h2 id="0x05-万国码"><a href="#0x05-万国码" class="headerlink" title="0x05 万国码"></a>0x05 万国码</h2><p>题目：<br>某天小明给了你一段代码让你破解，并且告诉这是万国码，你能帮他破解吗\u0066\u006c\u0061\u0067\u007b\u0032\u0035\u0033\u0039\u0061\u0034\u0036\u0036\u002d\u0030\u0062\u0064\u0031\u002d\u0034\u0062\u0061\u0036\u002d\u0038\u0066\u0032\u0031\u002d\u0063\u0039\u0065\u0035\u0030\u0038\u0063\u0063\u0062\u0061\u0064\u0039\u007d</p>
+<p>上面的字符串是Unicode编码，贴到浏览器的控制台,alert一下可以看到flag</p>
+<p><strong>flag{2539a466-0bd1-4ba6-8f21-c9e508ccbad9}</strong></p>
+<h2 id="0x06-小心猪圈"><a href="#0x06-小心猪圈" class="headerlink" title="0x06 小心猪圈"></a>0x06 小心猪圈</h2><p>题目：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">R29kIGpvYjo1NzY1NkM2QzIwNjQ2RjZFNjUzQTRBMzU1ODQ3NTkzNjRBNDE0RTM1NTg0NzRCNDk0NDU0NEY1MjUzNTg0MTQ5NDQ0MjRGMzU1MTU4NTM0RjUzNTI0NzQ5MzQ1ODRCNTc1MjU0NEE0QTU1NDc0OTUzNDM1NzRGNEU0RDU2NTE1NTU0NTE0RDQ5NUE0NDRCMzY1MzUwNEU1NTM0NTc1NTU5NEM0RjQ5NDkzMzU3NEIzMzRDNTU0RjQyNTI1NzMyMzQ0MjU0NEQ0QTRDNTQ1MTM1NDQ0MzQ3NEEzNDQ4NDc1OTRDNEE0NzQ2MzI1NzQ1NTYzMzU5NDc0RTQ3NDY0RjM0NDQ1NzRENTY0NDU3NTczNTQ0NDU0OTM0NTk1ODRENTk1MzQ4NDc1NjM0NTc0NTMzNEE1QTQ3NDI1MzQ3MzI0RDRDMzI0RDVBNDk1NDMyNTA0OTNE</div></pre></td></tr></table></figure>
+<p>被这道题卡了挺久..主要是被猪圈密码定住了思维，开始的想法是猪圈密码是图案，那么怎么靠字母和数字生成一张图片呢，虽然之前有用过浏览器打开data:image/jpg;base64,..这种方法，但解到某步之后在这里不适用，解出来是乱码，而且长度太短了。全靠团队大神，哈哈。<br>这个网站的解码挺全的<a href="http://emn178.github.io/online-tools/index.html" target="_blank" rel="external">http://emn178.github.io/online-tools/index.html</a></p>
+<p>1.base64</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">God job:57656C6C20646F6E653A4A35584759364A414E3558474B4944544F525358414944424F355158534F5352474934584B5752544A4A5547495343574F4E4D56515554514D495A444B3653504E55345755594C4F494933574B334C554F425257323442544D4A4C5451354443474A344847594C4A4746325745563359474E47464F3444574D56445757354445493459584D5953484756345745334A5A47425347324D4C324D5A49543250493D</div></pre></td></tr></table></figure>
+<p>2.16进制ascii码-&gt;字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Well done:J5XGY6JAN5XGKIDTORSXAIDBO5QXSOSRGI4XKWRTJJUGISCWONMVQUTQMIZDK6SPNU4WUYLOII3WK3LUOBRW24BTMJLTQ5DCGJ4HGYLJGF2WEV3YGNGFO4DWMVDWW5DEI4YXMYSHGV4WE3JZGBSG2ML2MZIT2PI=</div></pre></td></tr></table></figure>
+<p>3.base32</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Only one step away:Q29uZ3JhdHVsYXRpb25zOm9janB7emtpcmp3bW8tb2xsai1ubWx3LWpveGktdG1vbG5ybm90dm1zfQ==</div></pre></td></tr></table></figure>
+<p>4.base64</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Congratulations:ocjp&#123;zkirjwmo-ollj-nmlw-joxi-tmolnrnotvms&#125;</div></pre></td></tr></table></figure>
+<p>5.利用猪圈密码</p>
+<p><img src="/img/猪圈密码.jpg" alt=""></p>
+<p>o-&gt;f, c-&gt;l, j-&gt;a, p-&gt;g<br>剩下的就很好解啦。</p>
+<p><strong>flag{vbriasdf-fcca-edcs-aftr-xdfceiefxzdw}</strong></p>
+<h2 id="0x07-奇怪的数据库"><a href="#0x07-奇怪的数据库" class="headerlink" title="0x07 奇怪的数据库"></a>0x07 奇怪的数据库</h2><p>放进winhex可以看到一句话。其实百度这个乱码可以看到是类似于&lt;% excute request(“”)%&gt;的一句话，重点就是引号里面的内容</p>
+<p><strong>flag{opxcd}</strong></p>
+<h2 id="0x08-眼前"><a href="#0x08-眼前" class="headerlink" title="0x08 眼前"></a>0x08 眼前</h2><p>题目：<br>flag就在眼前</p>
+<p>flag确实在眼前，将文件拖入ida，搜索字符串，可以看到flag（这题坑爹在于一开始有问题，怎么提交都说不对，后来刚好公告说题目已经修补了，于是立刻去提交，拿了一血，哈哈）</p>
+<p><strong>flag{474d7400e14fcbed5a05f055e105b4a}</strong></p>
+<h2 id="0x09-找彩蛋"><a href="#0x09-找彩蛋" class="headerlink" title="0x09 找彩蛋"></a>0x09 找彩蛋</h2><p>题目：<br>老王开发了一套后台系统，藏着一个404跳转后的彩蛋，你能帮我找到这个彩蛋么。</p>
+<p>先看源代码，发现有GET Submit传参就输出flag，所以开burpsuite抓包，访问那个管理系统传入?Submit=1，然后看响应正文 得到flag</p>
+<p><strong>flag{a1941b114e5f522e215dd71d7f6b8d57}</strong></p>
+<h2 id="0x0A-又一个后台"><a href="#0x0A-又一个后台" class="headerlink" title="0x0A 又一个后台"></a>0x0A 又一个后台</h2><p>题目：<br>脑残程序员？</p>
+<p>扫了一下网站目录，发现有robots.txt，里面写着strcmp，联想到php部分版本的strcmp 特性，于是上网搜索PHP strcmp漏洞，接着传入构造的数组参数?pass[]=1，得到后台地址。发现有sql注入，用sqlmap注入，得到flag</p>
+<p><strong>flag{42174fe7-259b-4d49-b421-e8ca1ccfe020}</strong></p>
+<h2 id="0x0B-大黑阔"><a href="#0x0B-大黑阔" class="headerlink" title="0x0B 大黑阔"></a>0x0B 大黑阔</h2><p>题目：<br>大黑阔们到底在聊什么</p>
+<p>附件是pcap文件，扔进去wireshark分析，由于想分析对话，所以关键看http包，按包长度排序，找出比较大的包可能存在对话，整理了对话之后看到有“how about wangsicong 100?”，最后还有一个很大的数据包，是一张图片，中国地图。根据对话的提示，”his family has alot of building..you know..”，”what is 100?”，接着百度了一下“万达 100”，看到第一条是万达100店开业的新闻，于是联想到中国地图，看到第一百家万达是在昆明开业的，于是去地图的昆明看看，果然发现有东西，白色的flag，和底色很像，拿去ps工具处理一下，得到flag</p>
+<p><strong>flag{@G00d_L4ck_H3r3@}</strong></p>
+<h2 id="0x0C-单身狗"><a href="#0x0C-单身狗" class="headerlink" title="0x0C 单身狗"></a>0x0C 单身狗</h2><p>题目：<br>单身狗的二维码你能懂</p>
+<p>扔进网上的草料二维码扫描器，flag就出来了（刚好队里有小伙伴吃完饭看到这道题，拿了一血，哈哈）</p>
+<p><strong>flag{QR_C0d3_I5_Fin3?}</strong></p>
+<h2 id="0x0D-女神在哪儿"><a href="#0x0D-女神在哪儿" class="headerlink" title="0x0D 女神在哪儿"></a>0x0D 女神在哪儿</h2><p>题目：<br>关键问题：女神在哪？附件是我与女神聊天的记录，帮我分析一下女神位置呗。提示：flag是flag{女神所处酒店名称}</p>
+<p>没想到这是整个比赛最高分的题目。这题给了一些聊天记录，然后我们队把温州距离海十几公里左右的地图和街景都扫了一遍..最后还是靠其中一张手机截图里的wifi密码猜出女神住的酒店。<br>qthjfsbg，bg可以容易宾馆 石雕猜测出是宾馆，接着我们有在“女神朋友圈发的图片”那里隐约看到“石雕”关键字，于是我们去百度搜索关键字“宾馆 石雕 浙江”，看到了青田，刚好和qt对应上，所以就去去哪儿网搜索一下，根据拼音首字母，猜测是“青田皇家风尚宾馆”，提交flag成功。</p>
+<p><strong>flag{青田皇家风尚宾馆}</strong></p>
+<h2 id="0x0E-小苹果"><a href="#0x0E-小苹果" class="headerlink" title="0x0E 小苹果"></a>0x0E 小苹果</h2><p>题目：<br>仔细听，听到就给你</p>
+<p>工具的世界。刚好找到了一个音频分析的软件，SlientEye ，扔进去，解码，flag直接就出来了</p>
+<p><strong>flag{b1a63978-cd55-4ebf-a316-5f3a96fc466b}</strong></p>
+<h2 id="0x0F-爆破"><a href="#0x0F-爆破" class="headerlink" title="0x0F 爆破"></a>0x0F 爆破</h2><p>题目：<br>工兵手准备，ready go!!!</p>
+<p>本来正常拿去爆破，破了好久都没出来，后来找到有一种选择明文攻击的爆破方法（<a href="http://blog.csdn.net/jiangwlee/article/details/6911087" target="_blank" rel="external">http://blog.csdn.net/jiangwlee/article/details/6911087</a> ）。打开压缩包可以见到一个压缩包和txt，打开压缩包又见另一压缩包，里面有前一个readme.txt 和 flag 但是加密了，猜测两个readme.txt是有关联的，发现有利器pkcrack。尝试用pkcrack跑明文爆破 得压缩包密码，解压得到flag。</p>
+<p><strong>flag{7ip_fi13_S0m3tim3s_s0_3a5y@}</strong></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/CTF/">CTF</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/writeup/">writeup</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/11/30/广东省强网杯网络安全资格赛writeup/" data-title="广东省强网杯网络安全资格赛writeup | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/08/hctf2015-writeup/" title="hctf2015 writeup">
+  <strong>上一篇：</strong><br/>
+  <span>
+  hctf2015 writeup</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/11/24/Androrat木马静态分析/"  title="Androrat木马静态分析">
+ <strong>下一篇：</strong><br/> 
+ <span>Androrat木马静态分析
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#writeup"><span class="toc-number">2.</span> <span class="toc-text">writeup</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-来看一下flag格式"><span class="toc-number">2.1.</span> <span class="toc-text">0x00 来看一下flag格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-致敬经典"><span class="toc-number">2.2.</span> <span class="toc-text">0x01 致敬经典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-回旋13踢"><span class="toc-number">2.3.</span> <span class="toc-text">0x02 回旋13踢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-正确的密码"><span class="toc-number">2.4.</span> <span class="toc-text">0x03 正确的密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-常用的管理员密码"><span class="toc-number">2.5.</span> <span class="toc-text">0x04 常用的管理员密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-万国码"><span class="toc-number">2.6.</span> <span class="toc-text">0x05 万国码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x06-小心猪圈"><span class="toc-number">2.7.</span> <span class="toc-text">0x06 小心猪圈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x07-奇怪的数据库"><span class="toc-number">2.8.</span> <span class="toc-text">0x07 奇怪的数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x08-眼前"><span class="toc-number">2.9.</span> <span class="toc-text">0x08 眼前</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x09-找彩蛋"><span class="toc-number">2.10.</span> <span class="toc-text">0x09 找彩蛋</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0A-又一个后台"><span class="toc-number">2.11.</span> <span class="toc-text">0x0A 又一个后台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0B-大黑阔"><span class="toc-number">2.12.</span> <span class="toc-text">0x0B 大黑阔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0C-单身狗"><span class="toc-number">2.13.</span> <span class="toc-text">0x0C 单身狗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0D-女神在哪儿"><span class="toc-number">2.14.</span> <span class="toc-text">0x0D 女神在哪儿</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0E-小苹果"><span class="toc-number">2.15.</span> <span class="toc-text">0x0E 小苹果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x0F-爆破"><span class="toc-number">2.16.</span> <span class="toc-text">0x0F 爆破</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Python/" title="Python">Python<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/writeup/" title="writeup">writeup<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apk/" title="apk">apk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> This is my blog. <br/>
+			Welcome :)</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/7777777line" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:seven@whitecell-club.org" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="sevenline">sevenline</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
