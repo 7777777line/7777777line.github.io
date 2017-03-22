@@ -74,6 +74,62 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2017/03/22/MobSF搭建/" title="MobSF搭建" itemprop="url">MobSF搭建</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2017-03-22T08:37:04.000Z" itemprop="datePublished"> 发表于 2017-03-22</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>我搭建的MobSF版本为0.9.3.7，安装过程主要参考了MobSF的文档<a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation">https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation</a> ，但是在配置的过程中出现了一些bugs。</p>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2017/03/22/MobSF搭建/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
+
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2016/09/24/移动安全资源整理/" title="移动安全资源整理" itemprop="url">移动安全资源整理</a>
   </h1>
   <p class="article-author">By
@@ -345,89 +401,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/06/16/WHCTF2016-Writeup/" title="WHCTF2016 Writeup" itemprop="url">WHCTF2016 Writeup</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
-		
-  <p class="article-time">
-    <time datetime="2016-06-16T07:15:07.000Z" itemprop="datePublished"> 发表于 2016-06-16</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>这次比赛抽空做了四道题，Crypto一道，Reverse一道，Web两道。</p>
-<h1 id="李二狗的梦中情人"><a href="#李二狗的梦中情人" class="headerlink" title="李二狗的梦中情人"></a>李二狗的梦中情人</h1><p>类型：Crypto<br>附件下载后是一张艾玛沃特森的图片，用winhex查看，发现最后有个网址</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://image.baidu.com/search/down?tn=download&amp;word=download&amp;ie=utf8&amp;fr=detail&amp;url=http%3A%2F%2Fimg4q.duitang.com%2Fuploads%2Fitem%2F201501%2F13%2F20150113172039_Ea5ry.jpeg&amp;thumburl=http%3A%2F%2Fimg4.imgtn.bdimg.com%2Fit%2Fu%3D3348217047%2C3111455891%26fm%3D21%26gp%3D0.jpg</div></pre></td></tr></table></figure>
-<p>贴到浏览器下载，是另一张看起来一样的艾玛的图片，直觉两张图片做处理应该会有些东西出现，于是用stegsolve将两张图片combine之后，发现sub操作会有一个二维码出现。</p>
-<p><img src="/img/whctf-1.png" alt=""></p>
-<p>但是这个二维码是反色的，扔到paint，然后选择反色，再扔进二维码读取器，就得到flag</p>
-<p><img src="/img/whctf-2.png" alt=""></p>
-<p><strong>flag:whctf{hel10 ber7@hust_is}</strong></p>
-<h1 id="坐标定位"><a href="#坐标定位" class="headerlink" title="坐标定位"></a>坐标定位</h1><p>类型：Reverse<br>这道题就是之前ali移动安全挑战赛的翻版，只是flag变了而已<br>看反编译之后的代码可以看到，pw就是我们要破解的密码，而enPassword是我们输入的密码，两者相同就算破解成功，而两者都通过logcat输出来可以看到了，对照table表，可以很容易得出flag</p>
-<p><img src="/img/whctf-3.png" alt=""></p>
-<p><img src="/img/whctf-4.png" alt=""></p>
-<p><strong>flag:whctf{30-30-55-114-25-6}</strong></p>
-<h1 id="beat-it"><a href="#beat-it" class="headerlink" title="beat it"></a>beat it</h1><p>类型：Web<br>下载是一个pcap文件，用wireshark打开，只有三个包，看data部分</p>
-<p><img src="/img/whctf-5.png" alt=""></p>
-<p><img src="/img/whctf-6.png" alt=""></p>
-<p><img src="/img/whctf-7.png" alt=""></p>
-<p>可以看到77 68 63 74 66 刚好就是whctf的16进制ascii码， 于是后面也就是这样解出来了</p>
-<p><strong>flag:whctf{000 here it is the flag 000}</strong></p>
-<h1 id="忘了账户和密码"><a href="#忘了账户和密码" class="headerlink" title="忘了账户和密码"></a>忘了账户和密码</h1><p>类型：Web</p>
-<p><img src="/img/whctf-8.png" alt=""></p>
-<p><a href="http://drops.wooyun.org/tips/123" target="_blank" rel="external">http://drops.wooyun.org/tips/123</a> 这篇文章里提到的方法</p>
-<p><img src="/img/whctf-9.png" alt=""></p>
-<p><img src="/img/whctf-10.png" alt=""></p>
-<p><strong>flag:whctf{hustatmyhome}</strong></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/CTF/">CTF</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/writeup/">writeup</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
@@ -446,7 +419,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>9</sup></a></li>
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
 		  
 		
 		  
@@ -475,10 +448,6 @@
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
@@ -487,27 +456,11 @@
 			
 		
 			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
 			
 		
 			
@@ -515,11 +468,27 @@
 			
 		
 			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
 			
 		
 			
@@ -536,6 +505,10 @@
 		
 			
 				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 		</ul>

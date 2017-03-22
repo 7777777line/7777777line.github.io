@@ -4,41 +4,34 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>python控制台打印中文乱码问题 | Sevenline&#39;s blog</title>
+    <title>MobSF搭建 | Sevenline&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="sevenline">
     
 
     
-    <meta name="description" content="如果打印中文是以下的简单代码，会怎样？
-12345# -*- coding: utf-8 -*-__author__ = &apos;seven&apos;s = &apos;中文&apos;print s
-可以看到控制台输出是乱码..那么为什么会出现这个问题？怎么解决这个问题呢？
-乱码原因：
-可以看到，我的文件声明是utf-8编码，但是win下的控制台输出是gbk编码，两者的编码不对应，输出自然会是乱码。
-解决方法：
-一、文件声明编码">
+    <meta name="description" content="我搭建的MobSF版本为0.9.3.7，安装过程主要参考了MobSF的文档https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation ，但是在配置的过程中出现了一些bugs。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python控制台打印中文乱码问题">
-<meta property="og:url" content="http://yoursite.com/2016/07/18/python控制台打印中文乱码问题/index.html">
+<meta property="og:title" content="MobSF搭建">
+<meta property="og:url" content="http://yoursite.com/2017/03/22/MobSF搭建/index.html">
 <meta property="og:site_name" content="Sevenline's blog">
-<meta property="og:description" content="如果打印中文是以下的简单代码，会怎样？
-12345# -*- coding: utf-8 -*-__author__ = &apos;seven&apos;s = &apos;中文&apos;print s
-可以看到控制台输出是乱码..那么为什么会出现这个问题？怎么解决这个问题呢？
-乱码原因：
-可以看到，我的文件声明是utf-8编码，但是win下的控制台输出是gbk编码，两者的编码不对应，输出自然会是乱码。
-解决方法：
-一、文件声明编码">
-<meta property="og:updated_time" content="2016-07-18T09:47:18.594Z">
+<meta property="og:description" content="我搭建的MobSF版本为0.9.3.7，安装过程主要参考了MobSF的文档https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation ，但是在配置的过程中出现了一些bugs。">
+<meta property="og:image" content="http://yoursite.com/img/170322-1.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-2.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-3.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-4.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-5.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-6.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-7.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-8.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-9.png">
+<meta property="og:image" content="http://yoursite.com/img/170322-12.png">
+<meta property="og:updated_time" content="2017-03-22T09:09:51.286Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python控制台打印中文乱码问题">
-<meta name="twitter:description" content="如果打印中文是以下的简单代码，会怎样？
-12345# -*- coding: utf-8 -*-__author__ = &apos;seven&apos;s = &apos;中文&apos;print s
-可以看到控制台输出是乱码..那么为什么会出现这个问题？怎么解决这个问题呢？
-乱码原因：
-可以看到，我的文件声明是utf-8编码，但是win下的控制台输出是gbk编码，两者的编码不对应，输出自然会是乱码。
-解决方法：
-一、文件声明编码">
+<meta name="twitter:title" content="MobSF搭建">
+<meta name="twitter:description" content="我搭建的MobSF版本为0.9.3.7，安装过程主要参考了MobSF的文档https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation ，但是在配置的过程中出现了一些bugs。">
+<meta name="twitter:image" content="http://yoursite.com/img/170322-1.png">
 
     
     <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
@@ -91,14 +84,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/07/18/python控制台打印中文乱码问题/" title="python控制台打印中文乱码问题" itemprop="url">python控制台打印中文乱码问题</a>
+      <a href="/2017/03/22/MobSF搭建/" title="MobSF搭建" itemprop="url">MobSF搭建</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
 		
   <p class="article-time">
-    <time datetime="2016-07-18T09:44:59.000Z" itemprop="datePublished"> 发表于 2016-07-18</time>
+    <time datetime="2017-03-22T08:37:04.000Z" itemprop="datePublished"> 发表于 2017-03-22</time>
     
   </p>
 </header>
@@ -111,16 +104,37 @@
 		
 		</div>
 		
-		<p>如果打印中文是以下的简单代码，会怎样？</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line">__author__ = <span class="string">'seven'</span></div><div class="line"></div><div class="line">s = <span class="string">'中文'</span></div><div class="line"><span class="keyword">print</span> s</div></pre></td></tr></table></figure>
-<p>可以看到控制台输出是乱码..那么为什么会出现这个问题？怎么解决这个问题呢？</p>
-<p><strong>乱码原因</strong>：</p>
-<p>可以看到，我的文件声明是utf-8编码，但是win下的控制台输出是gbk编码，两者的编码不对应，输出自然会是乱码。</p>
-<p><strong>解决方法</strong>：</p>
-<p>一、文件声明编码为gbk</p>
-<p>二、但是很多时候，我们是从其他地方得到的文件进行处理的，而该文件本身的编码方式就是utf-8，那么我们就在控制台输出的地方进行一个转码。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line">__author__ = <span class="string">'seven'</span></div><div class="line"></div><div class="line">s = <span class="string">'中文'</span></div><div class="line"><span class="keyword">print</span> s.decode(<span class="string">'utf-8'</span>).encode(<span class="string">'gbk'</span>)</div></pre></td></tr></table></figure>
-<p>这样转码之后，控制台输出就不会中文乱码啦。</p>
+		<p>我搭建的MobSF版本为0.9.3.7，安装过程主要参考了MobSF的文档<a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation" target="_blank" rel="external">https://github.com/MobSF/Mobile-Security-Framework-MobSF/wiki/1.-Documentation</a> ，但是在配置的过程中出现了一些bugs。</p>
+ <a id="more"></a>
+<ol>
+<li>C++环境</li>
+</ol>
+<p><img src="/img/170322-1.png" alt=""></p>
+<p>那么直接从该网址下载就好了。</p>
+<ol>
+<li>安装lxml时出错</li>
+</ol>
+<p><img src="/img/170322-2.png" alt=""></p>
+<p><img src="/img/170322-3.png" alt=""></p>
+<p>从错误提示可以看到少了两个包，但是找了很久都没有合适的版本。</p>
+<p>这里显示下载的是lxml3.7.1，本来想通过wheel的方式安装，结果3.7.1版本（<a href="https://pypi.python.org/pypi/lxml/3.7.1" target="_blank" rel="external">https://pypi.python.org/pypi/lxml/3.7.1</a>）的没有python2.7环境下的win版本，所以下载较低版本，发现3.5版本有（<a href="https://pypi.python.org/pypi/lxml/3.5.0" target="_blank" rel="external">https://pypi.python.org/pypi/lxml/3.5.0</a>），于是下载该版本。</p>
+<p><img src="/img/170322-4.png" alt=""></p>
+<p>成功安装~</p>
+<p><img src="/img/170322-5.png" alt=""></p>
+<ol>
+<li>runserver时出错</li>
+</ol>
+<p><img src="/img/170322-6.png" alt=""></p>
+<p>显示是ssl的问题，找了好久，原来是下载其他依赖程序时，遇到问题了。</p>
+<p>安装的文件会在这里↓</p>
+<p><img src="/img/170322-7.png" alt=""></p>
+<p>可以在配置文件中看到它的下载地址</p>
+<p><img src="/img/170322-8.png" alt=""></p>
+<p>从错误提示可以知道是ssl的问题，后来根据网上的办法（<a href="http://stackoverflow.com/questions/27835619/ssl-certificate-verify-failed-error" target="_blank" rel="external">http://stackoverflow.com/questions/27835619/ssl-certificate-verify-failed-error</a>）修改了代码</p>
+<p><img src="/img/170322-9.png" alt=""></p>
+<p><img src="/img/170322-12.png" alt=""></p>
+<p>相关的依赖程序下载就没问题了。</p>
+<p>后面就跟着文档的流程走~</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -128,14 +142,9 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Python/">Python</a>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a>
-  </div>
 
 </div>
 
@@ -143,7 +152,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://yoursite.com/2016/07/18/python控制台打印中文乱码问题/" data-title="python控制台打印中文乱码问题 | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://yoursite.com/2017/03/22/MobSF搭建/" data-title="MobSF搭建 | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -156,19 +165,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/08/04/Mind-map-Android-Security/" title="Mind map - Android Security">
-  <strong>上一篇：</strong><br/>
-  <span>
-  Mind map - Android Security</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2016/07/18/使用burpsuite实现Android-APP的HTTPS抓包/"  title="使用burpsuite实现Android APP的HTTPS抓包">
+<a href="/2016/09/24/移动安全资源整理/"  title="移动安全资源整理">
  <strong>下一篇：</strong><br/> 
- <span>使用burpsuite实现Android APP的HTTPS抓包
+ <span>移动安全资源整理
 </span>
 </a>
 </div>
