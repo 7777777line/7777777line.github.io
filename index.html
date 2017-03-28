@@ -74,6 +74,67 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2017/03/28/IDA动态调试Android So文件/" title="IDA动态调试Android So文件" itemprop="url">IDA动态调试Android So文件</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2017-03-28T03:07:22.000Z" itemprop="datePublished"> 发表于 2017-03-28</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>参考了网上的教程自己动手调试so文件，在过程中发现了一些问题，并且有部分步骤和网上的教程不太一样。<br>用到的工具和样本：</p>
+<blockquote>
+<p>IDA 6.8<br>debugjniso.apk<br>libdebugjniso.so</p>
+</blockquote>
+<p>实验的apk文件和so文件是从非虫的Android软件安全与逆向分析中动态调试一章中获得的样本。主要的功能是点击界面的按钮控件更改应用的标题，而这部分的功能是在so文件中实现的。</p>
+<p>在捣鼓的过程中，主要分成了三种方法，具体步骤如下：</p>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2017/03/28/IDA动态调试Android So文件/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android逆向分析/">Android逆向分析</a>
+</div>
+
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2017/03/22/MobSF搭建/" title="MobSF搭建" itemprop="url">MobSF搭建</a>
   </h1>
   <p class="article-author">By
@@ -318,89 +379,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/07/18/使用burpsuite实现Android-APP的HTTPS抓包/" title="使用burpsuite实现Android APP的HTTPS抓包" itemprop="url">使用burpsuite实现Android APP的HTTPS抓包</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
-		
-  <p class="article-time">
-    <time datetime="2016-07-18T05:00:33.000Z" itemprop="datePublished"> 发表于 2016-07-18</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h1 id="0x00-序"><a href="#0x00-序" class="headerlink" title="0x00 序"></a>0x00 序</h1><p>在对app做安全测试时，通常会需要对app的网络通信进行抓包，但是面对app使用了https包时，由于手机没有burp的证书，因此可能会导致该次通信失败，所以下面的文章主要讲述如何通过burp抓取app的https包。</p>
-<h1 id="0x01-获取burpsuite证书"><a href="#0x01-获取burpsuite证书" class="headerlink" title="0x01 获取burpsuite证书"></a>0x01 获取burpsuite证书</h1><p>在wooyun上有看到文章说通过<a href="http://burp/cert" target="_blank" rel="external">http://burp/cert</a> 这个url导出证书，但是我发现打不开，因此还是采用从浏览器中导出证书的方式。</p>
-<h2 id="1-配置浏览器代理"><a href="#1-配置浏览器代理" class="headerlink" title="1.配置浏览器代理"></a>1.配置浏览器代理</h2><p>（1）首先开启burp，设置好代理</p>
-<p><img src="/img/160718-1.png" alt=""></p>
-<p>（2）此处用firefox浏览器作为例子。开启浏览器的代理<br>一般在 选项-&gt;高级-&gt;网络-&gt;连接的设置 中设置代理，ip和端口跟burp上的一样。<br>我这里用了firefox的插件，方便设置。</p>
-<p><img src="/img/160718-2.png" alt=""></p>
-<h2 id="2-下载并导出burp的证书"><a href="#2-下载并导出burp的证书" class="headerlink" title="2.下载并导出burp的证书"></a>2.下载并导出burp的证书</h2><p>（1）上面两个代理都设置开启好之后，在浏览器访问<a href="http://burp" target="_blank" rel="external">http://burp</a> ，点击”CA Certificate”下载证书-“cacert.der”</p>
-<p><img src="/img/160718-3.png" alt=""></p>
-<p>（2）选项-&gt;高级-&gt;证书-&gt;查看证书<br>接着导入证书-“cacert.der”</p>
-<p><img src="/img/160718-4.png" alt=""></p>
-<p>要记得勾选第一个选项</p>
-<p><img src="/img/160718-5.png" alt=""></p>
-<p>（3）最后导出证书-“PortSwiggerCA.crt”</p>
-<h1 id="0x02-将证书导入手机"><a href="#0x02-将证书导入手机" class="headerlink" title="0x02 将证书导入手机"></a>0x02 将证书导入手机</h1><ol>
-<li>通过adb push或传输附件等方式，将”PortSwiggerCA.crt”放到手机里，接着 设置-&gt;安全-&gt;从存储设备安装证书</li>
-</ol>
-<p><img src="/img/160718-6.jpg" alt=""></p>
-<ol>
-<li><p>选择刚刚放进来的证书</p>
-</li>
-<li><p>正常这样就成功了，但是我的出现“键入凭据存储的密码”的弹框。我的解决办法是，将解锁设置成图案解锁，不要采用滑动等低安全系数的屏幕锁定方式</p>
-</li>
-</ol>
-<p>通过以上步骤，burp就可以抓取手机上的HTTPS包了。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Burpsuite/">Burpsuite</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
@@ -420,6 +398,10 @@
 		
 		  
 			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
 		  
 		
 		  
@@ -448,7 +430,7 @@
 			
 		
 			
-				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -456,11 +438,19 @@
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
 			
 		
 			
@@ -472,11 +462,7 @@
 			
 		
 			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
 			
 		
 			
@@ -484,11 +470,11 @@
 			
 		
 			
-				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -505,10 +491,6 @@
 		
 			
 				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 		</ul>

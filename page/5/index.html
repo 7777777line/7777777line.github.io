@@ -74,6 +74,74 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2015/03/21/raw-input和input/" title="raw_input和input" itemprop="url">raw_input和input</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-03-21T09:10:39.000Z" itemprop="datePublished"> 发表于 2015-03-21</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>昨天在OJ上做CTF的题目，发现有道python的题目很有意思，让我知道了raw_input和input的区别，并且能干一些别的事情。</p>
+<p>官方文档上说，input()相当于eval(raw_input())。说明input()本质上还是用raw_input()实现的，不过还调用了eval()来处理输入的数据，意味着input()欢迎任何Python表达式的输入，输入的内容eval()会去执行，所以当输入input()-&gt;1+1时，会自动返回2.</p>
+<ol>
+<li><p>raw_input()接收任何形式的输入，但是所有的返回都是字符串类型；</p>
+</li>
+<li><p>input()希望能够接收合法的python表达式，所以输入字符串的时候需要用引号括住。同时，它返回的值能够保持自有的特性，如输入数字，返回的类型是int,float…</p>
+</li>
+</ol>
+<p>因此这些特性可以提醒我们使用它们的区别和场景。input()可以执行python表达式从某方面来说是“危险”的。例如那道CTF的题目，就是利用input()输入不合法的Python表达式，程序抛出异常，使得Flag暴露出来。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Python/">Python</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/raw-input/">raw_input</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2015/03/18/使用Burpsuite对手机抓包的配置/" title="使用Burpsuite对手机抓包的配置" itemprop="url">使用Burpsuite对手机抓包的配置</a>
   </h1>
   <p class="article-author">By
@@ -240,6 +308,10 @@ hexo d
 		  
 		
 		  
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
 		  
 		
@@ -265,7 +337,7 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -273,11 +345,19 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
 			
 		
 			
@@ -289,11 +369,7 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
 			
 		
 			
@@ -301,11 +377,11 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -322,10 +398,6 @@ hexo d
 		
 			
 				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 		</ul>

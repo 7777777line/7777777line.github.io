@@ -1,0 +1,586 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IDA动态调试Android So文件 | Sevenline&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="sevenline">
+    
+
+    
+    <meta name="description" content="前言参考了网上的教程自己动手调试so文件，在过程中发现了一些问题，并且有部分步骤和网上的教程不太一样。用到的工具和样本：
+
+IDA 6.8debugjniso.apklibdebugjniso.so
+
+实验的apk文件和so文件是从非虫的Android软件安全与逆向分析中动态调试一章中获得的样本。主要的功能是点击界面的按钮控件更改应用的标题，而这部分的功能是在so文件中实现的。
+在捣鼓的过程中，主">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IDA动态调试Android So文件">
+<meta property="og:url" content="http://yoursite.com/2017/03/28/IDA动态调试Android So文件/index.html">
+<meta property="og:site_name" content="Sevenline's blog">
+<meta property="og:description" content="前言参考了网上的教程自己动手调试so文件，在过程中发现了一些问题，并且有部分步骤和网上的教程不太一样。用到的工具和样本：
+
+IDA 6.8debugjniso.apklibdebugjniso.so
+
+实验的apk文件和so文件是从非虫的Android软件安全与逆向分析中动态调试一章中获得的样本。主要的功能是点击界面的按钮控件更改应用的标题，而这部分的功能是在so文件中实现的。
+在捣鼓的过程中，主">
+<meta property="og:image" content="http://yoursite.com/img/170328-1.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-2.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-3.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-4.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-5.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-6.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-7.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-8.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-9.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-10.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-11.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-12.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-13.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-14.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-15.png">
+<meta property="og:image" content="http://yoursite.com/img/170328-16.png">
+<meta property="og:updated_time" content="2017-03-28T06:08:21.327Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IDA动态调试Android So文件">
+<meta name="twitter:description" content="前言参考了网上的教程自己动手调试so文件，在过程中发现了一些问题，并且有部分步骤和网上的教程不太一样。用到的工具和样本：
+
+IDA 6.8debugjniso.apklibdebugjniso.so
+
+实验的apk文件和so文件是从非虫的Android软件安全与逆向分析中动态调试一章中获得的样本。主要的功能是点击界面的按钮控件更改应用的标题，而这部分的功能是在so文件中实现的。
+在捣鼓的过程中，主">
+<meta name="twitter:image" content="http://yoursite.com/img/170328-1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Sevenline&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Sevenline&#39;s blog">Sevenline&#39;s blog</a></h1>
+				<h2 class="blog-motto">Hello, Stranger.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/03/28/IDA动态调试Android So文件/" title="IDA动态调试Android So文件" itemprop="url">IDA动态调试Android So文件</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2017-03-28T03:07:22.000Z" itemprop="datePublished"> 发表于 2017-03-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#方法一"><span class="toc-number">1.1.</span> <span class="toc-text">方法一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法二"><span class="toc-number">1.2.</span> <span class="toc-text">方法二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法三"><span class="toc-number">1.3.</span> <span class="toc-text">方法三</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>参考了网上的教程自己动手调试so文件，在过程中发现了一些问题，并且有部分步骤和网上的教程不太一样。<br>用到的工具和样本：</p>
+<blockquote>
+<p>IDA 6.8<br>debugjniso.apk<br>libdebugjniso.so</p>
+</blockquote>
+<p>实验的apk文件和so文件是从非虫的Android软件安全与逆向分析中动态调试一章中获得的样本。主要的功能是点击界面的按钮控件更改应用的标题，而这部分的功能是在so文件中实现的。</p>
+<p>在捣鼓的过程中，主要分成了三种方法，具体步骤如下：</p>
+<a id="more"></a>
+<h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><p>1.开启android_server</p>
+<p><img src="/img/170328-1.png" alt=""></p>
+<p>2.端口转发</p>
+<p><img src="/img/170328-2.png" alt=""></p>
+<p>3.以调试方式启动程序</p>
+<p><font color="#FF0000"> 打开ddms </font>，接着以调试方式启动程序</p>
+<p><img src="/img/170328-3.png" alt=""></p>
+<p>4.jdb connect</p>
+<p><img src="/img/170328-4.png" alt=""></p>
+<p>5.ida调试端口设置及挂接</p>
+<p>假设出现下面的情况话，全部选cancel即可</p>
+<p><img src="/img/170328-5.png" alt=""></p>
+<p>Debugger-Attach-RemoteArmLinux/Android debugger，Hostname填localhost，port是android_server开启的端口</p>
+<p><img src="/img/170328-6.png" alt=""></p>
+<p>（注意，<font color="#FF0000"> 不打开应用就无法挂接相应的process </font>，所以该步之前会有步骤3）</p>
+<p><img src="/img/170328-7.png" alt=""></p>
+<p>6.下断点和运行调试</p>
+<p>要注意的是，<font color="#FF0000"> 确保so文件已经被加载到内存中，否则会查找不到so文件的内存基地址 </font><br>接着ctrl+s，找到内存地址</p>
+<p><img src="/img/170328-8.png" alt=""></p>
+<p>打开另外一个ida，加载so文件，找到要下断点函数对应的位置</p>
+<p><img src="/img/170328-9.png" alt=""></p>
+<p>可以得知，jniString()方法的偏移地址为C38，所以对应的内存地址为7689FC38，按G跳转到对应的地址</p>
+<p><img src="/img/170328-10.png" alt=""></p>
+<p>下断点</p>
+<p><img src="/img/170328-11.png" alt=""></p>
+<p>运行（F9），点击界面的控件，接着进行调试，F7单步步入，F8单步步出</p>
+<p><img src="/img/170328-12.png" alt=""></p>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>1.打开ida加载so文件，在对应的函数处下断点。</p>
+<p><img src="/img/170328-13.png" alt=""></p>
+<p>2.开启android_server</p>
+<p>3.端口转发</p>
+<p>4.以调试方式启动程序</p>
+<p>5.ida调试端口设置及挂接</p>
+<p><img src="/img/170328-14.png" alt=""></p>
+<p>6.jdb connect</p>
+<p><img src="/img/170328-15.png" alt=""></p>
+<p>7.点击运行（F9），点击手机的控件</p>
+<p><img src="/img/170328-16.png" alt=""></p>
+<p>点击“same”。直接就跳到断点处了。</p>
+<h2 id="方法三"><a href="#方法三" class="headerlink" title="方法三"></a>方法三</h2><p>假设不考虑反调试或加壳的情况，仅仅是简单地动态调试那么有个更加简便的方法。</p>
+<ol>
+<li>启动android_server</li>
+<li>端口转发</li>
+<li>ida加载so文件，并在相应的位置下断点</li>
+<li>在手机打开应用，ida挂接，attach to process</li>
+<li>运行（F9），点击手机控件，就跳到相应断点的地方了，接着可以开始调试。</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>下面是调试过程中的一些总结和思考。</p>
+<p>方法一二三的不同之处在于：</p>
+<ol>
+<li><p>方法一和二是用adb以调试模式打开应用，而方法三是直接在手机打开应用，直接打开应用的一个不足之处在于，加壳通常都是在so文件运行之前做的工作，如果直接手机打开应用，那么就会错过分析加壳过程的时机，因此要用调试模式打开；</p>
+</li>
+<li><p>方法一比方法二多了一步寻址的工作，方法二中是先加载so文件下断点，这样就不需要像方法一那样进行断电寻址的工作了。</p>
+</li>
+<li><p>综上，假如是普通的动态调试so文件，那么方法三最简便，如果有反调试，那么采用方法二会比较简便。</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android逆向分析/">Android逆向分析</a>
+</div>
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/03/28/IDA动态调试Android So文件/" data-title="IDA动态调试Android So文件 | Sevenline&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/03/22/MobSF搭建/"  title="MobSF搭建">
+ <strong>下一篇：</strong><br/> 
+ <span>MobSF搭建
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#方法一"><span class="toc-number">1.1.</span> <span class="toc-text">方法一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法二"><span class="toc-number">1.2.</span> <span class="toc-text">方法二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法三"><span class="toc-number">1.3.</span> <span class="toc-text">方法三</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/CTF/" title="CTF">CTF<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Python/" title="Python">Python<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/writeup/" title="writeup">writeup<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apk/" title="apk">apk<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> This is my blog. <br/>
+			Welcome :)</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/7777777line" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:seven@whitecell-club.org" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="sevenline">sevenline</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
