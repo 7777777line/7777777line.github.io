@@ -74,6 +74,89 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2017/04/16/移动安全挑战赛第二题分析及绕过反调试/" title="移动安全挑战赛第二题分析及绕过反调试" itemprop="url">移动安全挑战赛第二题分析及绕过反调试</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2017-04-16T07:50:19.000Z" itemprop="datePublished"> 发表于 2017-04-16</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>原本的想法是想实操绕过反调试的，刚好以前这道移动安全挑战赛的第二题是有反调试的，于是拿来练手，过程中也对动态调试有了更深的一些理解。</p>
+<h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><p>1.反编译apk可以看到securityCheck是校验的函数，但是在so里<br><img src="/img/170416-1.png" alt=""></p>
+<p>2.用ida打开so文件，分析securityCheck方法，主要实现的逻辑是比较字符串<br><img src="/img/170416-2.png" alt=""><br><img src="/img/170416-3.png" alt=""></p>
+<p>找到一个字符串wojiushidaan，输入但是不正确，于是打算动态调试。如果直接在该函数下断点，然后进行调试，应用会直接退出，说明在这个函数之前可能存在着反调试的工作。<br><img src="/img/170416-4.png" alt=""></p>
+<p>通常反调试可能在JNI_Onload或.init段的位置，因此我们在JNI_Onload下断点，进行调试。<br><img src="/img/170416-5.png" alt=""></p>
+<p>3.开始动态调试，绕过反调试。调试的步骤如同上一篇文章的方法二所写。<br>（0）在JNI_Onload下断点<br>（1）启动android_server<br>（2）转发端口23946<br>（3）以调试模式启动应用，adb shell am start -D -n com.yaotong.crackme/.MainActivity<br>（4）ida挂载，process option，attach process<br>（5）启动ddms，jdb -connect com.sun.jdi.SocketAttach:hostname=127.0.0.1,port=8700<br>注：如果这里ddms上没有显示该进程，那么说明可能应用没有允许调试，可以修改Androidmanifest文件中的application标签，添加android:debuggable=”true”，重编译签名，重新安装应用。<br>（6）ida按运行，跳到JNI_Onload的地方了<br><img src="/img/170416-6.png" alt=""><br>（7）F8单步跟踪，直到PC走到C58这个位置，出现了警告，并且应用也退出了调试模式<br><img src="/img/170416-7.png" alt=""><br><img src="/img/170416-8.png" alt=""></p>
+<p>（8）根据上述的反馈，可以判断BLX跳进去的这个地方可能有问题，于是我们重新挂载调试一遍。到R7这里，我们F7进入该函数，看到这里开了个线程，是做了检测反调试的工作<br><img src="/img/170416-9.png" alt=""></p>
+<p>（9）再一次重新挂载动态调试，在单步跟踪到C58之前，nop掉C58这个地方。按F2（或右键-&gt;edit）修改为0000A0E1，在按一次F2应用修改。这一次平安无事地过了C58.<br><img src="/img/170416-10.png" alt=""><br><img src="/img/170416-11.png" alt=""></p>
+<p>（10）按运行，然后在应用的输入框内输入，点击按钮。就跳到了securityCheck方法<br><img src="/img/170416-12.png" alt=""></p>
+<p>（11）继续F8.根据之前静态分析的结果，可以定位这个地方。R0地址存的是我们输入的值，R2地址就是我们想要的flag.<br><img src="/img/170416-13.png" alt=""><br>（12）其中，过反调试的方法除了nop掉反调试检测的地方。网上还有大神提出使用Kill调试技巧。</p>
+<blockquote>
+<p>该技巧是QEver 在《MSC的伪解题报告》中提到的。利用kill我们可以让程序挂起，然后用ida挂载上去，获取有用的信息，然后可以再用kill将程序恢复运行。我们还是拿自毁程序密码这个应用举例，具体实行方法如下：<br>1 首先用ps获取运行的app的pid。<br><img src="/img/170416-14.jpeg" alt=""><br>2 然后用kill -19 [pid] 就可以将这个app挂起了。<br><img src="/img/170416-15.jpeg" alt=""><br>3 随后我们用ida attach上这个app。因为整个进程都挂起了，所以这次ida挂载后app并没有闪退。然后就可以在内存中找到答案了。<br><img src="/img/170416-16.jpeg" alt=""><br>4 如果想要恢复app的运行，需要将ida退出，然后再使用kill -18 [pid]即可。<br><img src="/img/170416-17.jpeg" alt=""></p>
+</blockquote>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>在分析securityCheck方法时候，我们发现有一个android_log_print的方法，该方法会打印一些调试信息，那么我们尝试通过该log方法将flag的值输出来。具体方法如下：</p>
+<blockquote>
+<ul>
+<li>将从0x1284到0x129C处都用NOP改写（NOP为空操作）</li>
+<li>在0x12AC处调用android_log_print函数</li>
+<li>为了不影响R1的值，把0x12A0处的R1改成R3</li>
+<li>将0x12A4处的R1改成R3</li>
+<li>将0x12A8处指令改成MOV R0,#4<br>因为so为二进制文件，所以我们修改的也是二进制。</li>
+<li>NOP对应的二进制值为00 00 A0 E1</li>
+<li>android_log_print对应的二进制值为88 FF FF EB</li>
+<li>0x12A0处的值应改为60 30 9F E5</li>
+<li>0x12A4处的值应改为07 20 93 E7</li>
+<li>MOV R0,#4的值为04 00 A0 E3</li>
+</ul>
+</blockquote>
+<p>在ida上直接修改只是会保存到相应的数据库中，而我们实际修改要通常十六进制编辑器直接对so文件进行修改。修改完后，重打包apk，运行，观察log信息。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android逆向分析/">Android逆向分析</a>
+</div>
+
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2017/04/16/Android反调试方法总结/" title="Android反调试方法总结" itemprop="url">Android反调试方法总结</a>
   </h1>
   <p class="article-author">By
@@ -107,6 +190,11 @@
     </div>
     <footer class="article-footer clearfix">
 <div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
 
 
   <div class="article-tags">
@@ -317,64 +405,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/08/04/Mind-map-Android-Security/" title="Mind map - Android Security" itemprop="url">Mind map - Android Security</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
-		
-  <p class="article-time">
-    <time datetime="2016-08-04T03:00:14.000Z" itemprop="datePublished"> 发表于 2016-08-04</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>近日在做Android app安全检测的项目，刚好找到一张Android安全的思维导图。而之前自己也整理了一份Android客户端漏洞的思维导图，内容不完善，望有人一起补充整理。</p>
-<h1 id="Android-Security思维导图"><a href="#Android-Security思维导图" class="headerlink" title="Android Security思维导图"></a>Android Security思维导图</h1><p>来源：<a href="http://zone.wooyun.org/content/19039" target="_blank" rel="external">http://zone.wooyun.org/content/19039</a></p>
-<p><img src="/img/160804-1.png" alt=""></p>
-<h1 id="Android常见客户端漏洞思维导图"><a href="#Android常见客户端漏洞思维导图" class="headerlink" title="Android常见客户端漏洞思维导图"></a>Android常见客户端漏洞思维导图</h1><p><img src="/img/160804-2.png" alt=""></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
-</div>
-
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
@@ -393,11 +423,11 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>11</sup></a></li>
 		  
 		
 		  
-			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>2</sup></a></li>
 		  
 		
 		  
@@ -426,6 +456,10 @@
 			
 		
 			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
@@ -434,19 +468,7 @@
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -454,11 +476,11 @@
 			
 		
 			
-				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -466,11 +488,7 @@
 			
 		
 			
-				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
 			
 		
 			
@@ -478,11 +496,23 @@
 			
 		
 			
-				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
 			
 		
 			

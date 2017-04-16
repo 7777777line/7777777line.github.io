@@ -17,7 +17,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android反调试方法总结/index.html">
 <meta property="og:site_name" content="Sevenline's blog">
 <meta property="og:description" content="0x00 前言前段时间想拿移动安全挑战赛的题目练练手，遇到了反调试的问题，于是顺便上网找了下资料，总结了Android反调试的一些方法。这里提到的Android应用的反调试针对的是so文件的，而非java层的反调试。反调试的一个主要特征是，当检测到应用正在被调试，那么应用就会强制退出，无法继续被调试。目前简单地反调试方法并非不可绕过，但相对而言可以增加攻击者破解应用的时间成本，主要的方法有以下几种">
-<meta property="og:updated_time" content="2017-04-16T03:20:24.044Z">
+<meta property="og:updated_time" content="2017-04-16T07:45:15.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android反调试方法总结">
 <meta name="twitter:description" content="0x00 前言前段时间想拿移动安全挑战赛的题目练练手，遇到了反调试的问题，于是顺便上网找了下资料，总结了Android反调试的一些方法。这里提到的Android应用的反调试针对的是so文件的，而非java层的反调试。反调试的一个主要特征是，当检测到应用正在被调试，那么应用就会强制退出，无法继续被调试。目前简单地反调试方法并非不可绕过，但相对而言可以增加攻击者破解应用的时间成本，主要的方法有以下几种">
@@ -109,6 +109,11 @@
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
+
 
   <div class="article-tags">
   
@@ -134,6 +139,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2017/04/16/移动安全挑战赛第二题分析及绕过反调试/" title="移动安全挑战赛第二题分析及绕过反调试">
+  <strong>上一篇：</strong><br/>
+  <span>
+  移动安全挑战赛第二题分析及绕过反调试</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2017/03/28/IDA动态调试Android So文件/"  title="IDA动态调试Android So文件">
@@ -167,11 +180,11 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>11</sup></a></li>
 		  
 		
 		  
-			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>2</sup></a></li>
 		  
 		
 		  
@@ -200,6 +213,10 @@
 			
 		
 			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
@@ -208,19 +225,7 @@
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -228,11 +233,11 @@
 			
 		
 			
-				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -240,11 +245,7 @@
 			
 		
 			
-				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
 			
 		
 			
@@ -252,11 +253,23 @@
 			
 		
 			
-				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
 			
 		
 			

@@ -74,6 +74,80 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2015/07/17/Activity组件暴露导致本地拒绝服务/" title="Activity组件暴露导致本地拒绝服务" itemprop="url">Activity组件暴露导致本地拒绝服务</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-07-17T12:31:21.000Z" itemprop="datePublished"> 发表于 2015-07-17</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>这几天团队打算一起学习Android App漏洞挖掘方面的知识，于是乎拿了一个app当测试例子，争取在上面找到漏洞。在学习过程中发现Android四大组件的安全性还是占有较大的比重，另外比较关心的是数据的安全性。数据泄漏、明文存储等和数据相关都是比较重要的。但是今天找到的一个漏洞是关于Activity组件的，本地拒绝服务漏洞。</p>
+<p>同时学习了drozer的使用方法，利用drozer帮忙找漏洞。</p>
+<p>下面总结一些常用的drozer命令：</p>
+<pre><code># xxx是包名的一部分，运行这条命令之后会显示完整的包名
+run app.package.info -f xxx
+# 运行这条命令会打印出包相关的信息，包括版本、路径、权限、uid、gid等
+run app.package.info -a &lt;包名&gt;
+# 运行这条命令之后会打印出这个应用四大组件的攻击面，Activity, Service, Content,Provider, Broadcast是否有暴露的风险
+run app.package.attacksurface &lt;包名&gt;　　
+# 运行这条命令会打印出exported的activity，并且显示是否需要相应的权限
+run app.activity.info -a &lt;包名&gt;
+# 如果activity是exported并且不需要权限，那么运行这条命令就可以启动相应的activity了
+run app.activity.start --component &lt;包名&gt; &lt;activity&gt;
+</code></pre><p>（目前只测试了activity组件，所以关于其他组件的命令暂时还没有使用）</p>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2015/07/17/Activity组件暴露导致本地拒绝服务/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/refuse-service/">refuse service</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2015/06/06/python类型转换/" title="python类型转换" itemprop="url">python类型转换</a>
   </h1>
   <p class="article-author">By
@@ -374,11 +448,11 @@ hexo d
 		<ul>
 		
 		  
-			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>10</sup></a></li>
+			<li><a href="/categories/Android-Security/" title="Android Security">Android Security<sup>11</sup></a></li>
 		  
 		
 		  
-			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>1</sup></a></li>
+			<li><a href="/categories/Android逆向分析/" title="Android逆向分析">Android逆向分析<sup>2</sup></a></li>
 		  
 		
 		  
@@ -407,6 +481,10 @@ hexo d
 			
 		
 			
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/BHP/" title="BHP">BHP<sup>2</sup></a></li>
 			
 		
@@ -415,19 +493,7 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/Burpsuite/" title="Burpsuite">Burpsuite<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -435,11 +501,11 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
+				<li><a href="/tags/tcp-proxy/" title="tcp proxy">tcp proxy<sup>1</sup></a></li>
 			
 		
 			
@@ -447,11 +513,7 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
 			
 		
 			
@@ -459,11 +521,23 @@ hexo d
 			
 		
 			
-				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+				<li><a href="/tags/类型转换/" title="类型转换">类型转换<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/raw-input/" title="raw_input">raw_input<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
 			
 		
 			
