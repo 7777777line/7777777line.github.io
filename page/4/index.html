@@ -74,6 +74,73 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2015/11/24/Androrat木马静态分析/" title="Androrat木马静态分析" itemprop="url">Androrat木马静态分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-24T02:15:56.000Z" itemprop="datePublished"> 发表于 2015-11-24</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>Androrat原本是一个对Android设备进行远程管理的工具，但是使用不当的话，其实就相当于是一个木马程序。Androrat现在主要有两个版本，一个是国外原版，另一个是国内开发人员开发的，我这里分析的是国外原版（法国人写的- -|| 看不懂的注释..），没有经过太大改动。</p>
+<p>那么它官方给出的功能有：</p>
+<blockquote>
+<p>获取通讯录信息<br>获取呼叫记录<br>获取短信和彩信<br>通过 GPS 获取定位<br>实时监控接收到的短信<br>监控手机的呼叫状态<br>拍照<br>获取来自麦克风的声音信息<br>视频<br>弹窗<br>发送文本消息<br>拨号<br>在浏览器中打开某个网址<br>震动等</p>
+</blockquote>
+<p>Androrat的工作模式是C/S模式，在pc端或者服务器上安装Androrat的server，在移动设备上安装Androrat的client端。大概的流程是，server端发送指令到client，client对指令做出相应的解释和操作，接着返回数据给server，server展现收到的数据。<br>client的主界面是需要手动输入server端的ip和port，然后点击按钮启动服务，那如果修改Androrat的源码，指定ip和port（当然这时server就要放置在有外网ip的服务器上啦），默认开启服务，通过其他手段让受害者安装这个修改后的andorat，这样server就可以控制多台肉鸡了。</p>
+<p>那我们现在来分析一下Androrat的工作原理：<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2015/11/24/Androrat木马静态分析/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android-Security/">Android Security</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/androrat/">androrat</a><a href="/tags/木马分析/">木马分析</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2015/10/08/利用python读取apk文件目录及uses-permission/" title="利用python读取apk文件目录及uses-permission" itemprop="url">利用python读取apk文件目录及uses-permission</a>
   </h1>
   <p class="article-author">By
@@ -325,72 +392,9 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/09/10/使用python的socket模块进行网络编程/" title="使用python的socket模块进行网络编程" itemprop="url">使用python的socket模块进行网络编程</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="sevenline" target="_blank" itemprop="author">sevenline</a>
-		
-  <p class="article-time">
-    <time datetime="2015-09-10T12:36:52.000Z" itemprop="datePublished"> 发表于 2015-09-10</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>使用socket编程可以分成基于tcp和基于udp，tcp和udp两者最主要的区别是有无面向连接。</p>
-<p>基于<code>tcp</code>的socket流程：</p>
-<p><img src="/img/tcp socket.png" alt=""><br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015/09/10/使用python的socket模块进行网络编程/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Python/">Python</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/socket/">socket</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
-    <a class="extend prev" rel="prev" href="/page/3/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next<span></span></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next<span></span></a>
   </nav>
 
 </div>
@@ -439,7 +443,7 @@
 			
 		
 			
-				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
 			
 		
 			
@@ -447,7 +451,7 @@
 			
 		
 			
-				<li><a href="/tags/python/" title="python">python<sup>2</sup></a></li>
+				<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
 			
 		
 			
@@ -455,11 +459,11 @@
 			
 		
 			
-				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
+				<li><a href="/tags/面经/" title="面经">面经<sup>1</sup></a></li>
 			
 		
 			
@@ -467,15 +471,15 @@
 			
 		
 			
-				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/反调试/" title="反调试">反调试<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+				<li><a href="/tags/refuse-service/" title="refuse service">refuse service<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/allow-backup/" title="allow backup">allow backup<sup>1</sup></a></li>
 			
 		
 			
@@ -487,15 +491,15 @@
 			
 		
 			
-				<li><a href="/tags/木马分析/" title="木马分析">木马分析<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/socket/" title="socket">socket<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
+				<li><a href="/tags/androrat/" title="androrat">androrat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nc/" title="nc">nc<sup>1</sup></a></li>
 			
 		
 			
@@ -504,6 +508,10 @@
 		
 			
 				<li><a href="/tags/uses-permission/" title="uses-permission">uses-permission<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态调试/" title="动态调试">动态调试<sup>1</sup></a></li>
 			
 		
 		</ul>
